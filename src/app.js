@@ -1,10 +1,20 @@
 const express = require('express');
 const mongoose = require('mongoose');
+const dotEnv = require('dotenv');
+
+const logger = require('./utils/logger');
+const errorHandler = require('./middlewares/errorHandler');
+require('express-async-errors');
 
 const authRoutes = require('./routes/authRoutes');
 const userRoutes = require('./routes/userRoutes.js');
 
-const mongoConnectionURI = process.env.MONGO_URI;
+dotEnv.config();
+
+const mongoConnectionURI =
+  process.env.MONMONGO_CLUSTER_URI !== null
+    ? MONGO_CLUSTER_URI
+    : MONMONGO_LOCAL_URI;
 mongoose
   .connect(mongoConnectionURI, {
     userNewUrlParser: true,
@@ -28,6 +38,8 @@ app.use('/api/auth', authRoutes);
 app.get('/', (req, res) => {
   res.send("project's api home route live!");
 });
+
+app.use(errorHandler);
 
 const PORT = process.env.PORT || 3000;
 
